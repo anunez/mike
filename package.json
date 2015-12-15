@@ -11,6 +11,7 @@
     "runner"
   ],
   "author": "Alberto Núñez <nuakosta@gmail.com>",
+  "repository": "anunez/mole-task-runner",
   "license": "MIT",
   "bin": {
     "mole": "./mole.js"
