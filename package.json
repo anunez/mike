@@ -1,8 +1,8 @@
 {
-  "name": "mole-task-runner",
+  "name": "mike",
   "version": "0.0.3",
   "description": "Lean task runner",
-  "main": "mole.js",
+  "main": "mike.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,10 +11,10 @@
     "runner"
   ],
   "author": "Alberto Núñez <nuakosta@gmail.com>",
-  "repository": "anunez/mole-task-runner",
+  "repository": "anunez/mike",
   "license": "MIT",
   "bin": {
-    "mole": "./mole.js"
+    "mike": "./mike.js"
   },
   "dependencies": {
     "colors": "^1.1.2",

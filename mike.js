@@ -6,7 +6,7 @@ var dateFormat = require('dateformat');
 var fs = require('fs');
 var program = require('commander');
 
-var TASKS_FILE = 'molefile.js';
+var TASKS_FILE = 'mikefile.js';
 
 var rootTask = 'default';
 

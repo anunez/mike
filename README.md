@@ -1,16 +1,16 @@
-# mole
+# mike
 
 Lean task runner.
 
 ## Install
 ```sh
-$ npm install mole-task-runner --save-dev
+$ npm install mike --save-dev
 ```
 
 ## Config
-Create a file `molefile.js` in the root of your project.
+Create a file `mikefile.js` in the root of your project.
 
-Example of a molefile:
+Example of a mikefile:
 ```javascript
 module.exports = {
   'clean': {
@@ -73,7 +73,7 @@ module.exports = {
   'watch': {
     'spawn': true,
     'pre': ['npm:install'],
-    'cmd': ['node_modules/.bin/wr --exec "mole css" less']
+    'cmd': ['node_modules/.bin/wr --exec "mike css" less']
   }
 };
 
@@ -81,7 +81,7 @@ module.exports = {
 
 ## Usage
 ```
-Usage: mole [options] <task>
+Usage: mike [options] <task>
 
   Options:
 
