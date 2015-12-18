@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+'use strict';
 var child_process = require('child_process');
 var colors = require('colors/safe');
 var dateFormat = require('dateformat');
@@ -105,7 +106,7 @@ function execute(task) {
       var taskTime = process.hrtime();
 
       var commands = tasks[task]['cmd'].map(function(cmd) {
-        return function(resolve, reject) {
+        return function(resolveCommand, rejectCommand) {
           if (tasks[task].hasOwnProperty('spawn') && tasks[task]['spawn']) {
             var isInitialData = true;
             var shell = child_process.spawn('sh');
@@ -127,7 +128,11 @@ function execute(task) {
             });
 
             shell.on('close', function(code) {
-              code === 0 ? resolve() : reject();
+              if (code === 0) {
+                resolve();
+              } else {
+                rejectCommand();
+              }
             });
 
             shell.stdin.write(cmd);
@@ -157,7 +162,7 @@ function execute(task) {
                 fail('failure when executing task ' + task);
               }
 
-              resolve();
+              resolveCommand();
             });
           }
         };
@@ -166,7 +171,7 @@ function execute(task) {
       // Execute commands sequentially
       commands.reduce(function(cur, next) {
         return cur.then(function() {
-          return new Promise(next)
+          return new Promise(next);
         });
       }, Promise.resolve()).then(function() {
         logTime('Finished ' + colors.cyan.bold(task) + ' after ' + colors.magenta(duration(taskTime) + ' seconds'));
