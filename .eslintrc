@@ -1,39 +1,43 @@
-env:
-    node: true
-
-rules:
-    brace-style: [2, "1tbs"]
-    comma-style: [2, "last"]
-    camelcase: 0
-    curly: 2
-    default-case: 2
-    dot-notation: 0
-    eqeqeq: 2
-    guard-for-in: 2
-    indent: [2, 2]
-    new-cap: 0
-    no-console: 0
-    no-debugger: 2
-    no-empty: 2
-    no-floating-decimal: 2
-    no-nested-ternary: 2
-    no-process-exit: 0
-    no-undefined: 2
-    no-underscore-dangle: 0
-    no-unreachable: 2
-    no-use-before-define: 0
-    quotes: 'single'
-    radix: 2
-    space-after-function-name: [2, "never"]
-    space-after-keywords: [2, "always"]
-    space-before-blocks: 2
-    spaced-line-comment: [2, "always", { exceptions: ["-"]}]
-    strict: [2, "global"]
-    valid-jsdoc:
-      - 2
-      - prefer:
-          return: returns
-        requireParamDescription: false
-        requireReturnDescription: false
-        requireReturn: false
-    wrap-iife: [2, "any"]
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "brace-style": [2, "1tbs"],
+    "comma-style": [2, "last"],
+    "camelcase": 0,
+    "curly": 2,
+    "default-case": 2,
+    "dot-notation": 0,
+    "eqeqeq": 2,
+    "guard-for-in": 2,
+    "indent": [2, 2],
+    "new-cap": 0,
+    "no-console": 0,
+    "no-debugger": 2,
+    "no-empty": 2,
+    "no-floating-decimal": 2,
+    "no-nested-ternary": 2,
+    "no-process-exit": 0,
+    "no-undefined": 2,
+    "no-underscore-dangle": 0,
+    "no-unreachable": 2,
+    "no-use-before-define": 0,
+    "quotes": [2, "single"],
+    "radix": 2,
+    "space-before-function-paren": [2, { "anonymous": "never", "named": "never" }],
+    "space-after-keywords": [2, "always"],
+    "space-before-blocks": 2,
+    "spaced-comment": [2, "always", { "exceptions": ["-"]}],
+    "strict": [2, "global"],
+    "valid-jsdoc": [2, {
+      "prefer": {
+        "return": "returns"
+      },
+      "requireParamDescription": false,
+      "requireReturnDescription": false,
+      "requireReturn": false
+    }],
+    "wrap-iife": [2, "any"]
+  }
+}

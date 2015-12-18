@@ -198,7 +198,7 @@ function duration(startTime) {
  * @param {string} message
  */
 function logTime(message) {
-  var time = dateFormat(new Date(), "HH:MM:ss");
+  var time = dateFormat(new Date(), 'HH:MM:ss');
   console.log('[' + colors.gray(time) + '] ' + message);
 }
 
