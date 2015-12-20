@@ -3,7 +3,6 @@
 'use strict';
 var child_process = require('child_process');
 var colors = require('colors/safe');
-var dateFormat = require('dateformat');
 var fs = require('fs');
 var program = require('commander');
 
@@ -198,7 +197,11 @@ function duration(startTime) {
  * @param {string} message
  */
 function logTime(message) {
-  var time = dateFormat(new Date(), 'HH:MM:ss');
+  var date = new Date();
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var seconds = date.getSeconds();
+  var time = ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
   console.log('[' + colors.gray(time) + '] ' + message);
 }
 
