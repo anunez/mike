@@ -6,6 +6,8 @@ var colors = require('colors/safe');
 var fs = require('fs');
 var program = require('commander');
 
+var TaskMap = require('./task-map');
+
 var TASKS_FILE = 'mikefile.js';
 
 var rootTask = 'default';
@@ -26,17 +28,17 @@ program
 // Load the tasks file
 var tasksFile = process.cwd() + '/' + TASKS_FILE;
 try {
-  var tasks = require(tasksFile);
+  var tasks = new TaskMap(require(tasksFile));
 } catch (e) {
   fail(e.message);
 }
 
 console.log('Using file ' + colors.magenta(tasksFile));
 
-if (!tasks.hasOwnProperty(rootTask)) {
+if (!tasks.contains(rootTask)) {
   console.log(colors.yellow('Available tasks: '));
 
-  Object.keys(tasks).sort().map(function(task) {
+  tasks.getTaskNames().map(function(task) {
     console.log('  ' + task);
   });
 
@@ -61,33 +63,34 @@ execute(rootTask).then(function() {
  *   2. Executes all tasks specified in the 'pre' field, in parallel.
  *   3. Executes all shell scripts specified in 'cmd', sequentially. If the
  *      'spawn' option is set to true, it will use spawn instead of exec.
- * @param {string} task The name of the task to run.
+ * @param {string} taskName The name of the task to run.
  * @returns {Promise}
  */
-function execute(task) {
-  return new Promise(function(resolve, reject) {
-    if (!tasks.hasOwnProperty(task)) {
-      fail('task ' + task + ' is not defined');
-    }
+function execute(taskName) {
+  try {
+    var task = tasks.get(taskName);
+  } catch (e) {
+    fail(e.message);
+  }
 
+  return new Promise(function(resolve, reject) {
     var preconditions = [];
 
-    if (tasks[task].hasOwnProperty('pre')) {
-      tasks[task]['pre'].forEach(function(preTask) {
-        if (promiseCache.hasOwnProperty(preTask)) {
-          preconditions.push(promiseCache[preTask]);
-        } else {
-          var prePromise = execute(preTask);
-          promiseCache[preTask] = prePromise;
-          preconditions.push(prePromise);
-        }
-      });
-    }
+    task.getPreconditions().forEach(function(preTask) {
+      if (promiseCache.hasOwnProperty(preTask)) {
+        preconditions.push(promiseCache[preTask]);
+      } else {
+        var prePromise = execute(preTask);
+        promiseCache[preTask] = prePromise;
+        preconditions.push(prePromise);
+      }
+    });
 
     Promise.all(preconditions).then(function() {
-      if (tasks[task].hasOwnProperty('out') && !program.force) {
-        for (var i = 0; i < tasks[task]['out'].length; i++) {
-          var stats = fs.statSync(tasks[task]['out'][i]);
+      if (!program.force) {
+        var outputs = task.getOutputs();
+        for (var i = 0; i < outputs.length; i++) {
+          var stats = fs.statSync(outputs[i]);
           if (stats.isFile() || stats.isDirectory()) {
             resolve();
             return;
@@ -95,24 +98,26 @@ function execute(task) {
         }
       }
 
-      if (!tasks[task].hasOwnProperty('cmd')) {
+      var taskCommands = task.getCommands();
+
+      if (!taskCommands.length) {
         resolve();
         return;
       }
 
-      logTime('Starting ' + colors.cyan.bold(task) + '...');
+      logTime('Starting ' + colors.cyan.bold(taskName) + '...');
 
       var taskTime = process.hrtime();
 
-      var commands = tasks[task]['cmd'].map(function(cmd) {
+      var commands = taskCommands.map(function(cmd) {
         return function(resolveCommand, rejectCommand) {
-          if (tasks[task].hasOwnProperty('spawn') && tasks[task]['spawn']) {
+          if (task.isSpawnable()) {
             var isInitialData = true;
             var shell = child_process.spawn('sh');
 
             shell.stdout.on('data', function(data) {
               if (isInitialData) {
-                logTime(colors.cyan(task) + ' ' + colors.magenta(cmd));
+                logTime(colors.cyan(taskName) + ' ' + colors.magenta(cmd));
                 isInitialData = false;
               }
               process.stdout.write(data);
@@ -120,7 +125,7 @@ function execute(task) {
 
             shell.stderr.on('data', function(data) {
               if (isInitialData) {
-                logTime(colors.cyan(task) + ' ' + colors.magenta(cmd));
+                logTime(colors.cyan(taskName) + ' ' + colors.magenta(cmd));
                 isInitialData = false;
               }
               process.stderr.write(data);
@@ -141,7 +146,7 @@ function execute(task) {
               var headerPrinted = false;
 
               if (err instanceof Error || program.all && out.length > 0) {
-                logTime(colors.cyan(task) + ' ' + colors.magenta(cmd));
+                logTime(colors.cyan(taskName) + ' ' + colors.magenta(cmd));
                 headerPrinted = true;
                 out.trim().split('\n').map(function(line) {
                   console.log(colors.white(line));
@@ -150,7 +155,7 @@ function execute(task) {
 
               if (err instanceof Error || !program.mute && stderr.length > 0) {
                 if (!headerPrinted) {
-                  logTime(colors.cyan(task) + ' ' + colors.magenta(cmd));
+                  logTime(colors.cyan(taskName) + ' ' + colors.magenta(cmd));
                 }
                 stderr.trim().split('\n').map(function(line) {
                   console.log(colors.yellow(line));
@@ -158,7 +163,7 @@ function execute(task) {
               }
 
               if (err instanceof Error) {
-                fail('failure when executing task ' + task);
+                fail('failure when executing task ' + taskName);
               }
 
               resolveCommand();
@@ -173,7 +178,7 @@ function execute(task) {
           return new Promise(next);
         });
       }, Promise.resolve()).then(function() {
-        logTime('Finished ' + colors.cyan.bold(task) + ' after ' + colors.magenta(duration(taskTime) + ' seconds'));
+        logTime('Finished ' + colors.cyan.bold(taskName) + ' after ' + colors.magenta(duration(taskTime) + ' seconds'));
         resolve();
       }).catch(reject);
     });
