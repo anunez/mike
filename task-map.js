@@ -12,26 +12,28 @@ var TaskMap = function() {
 };
 
 /**
- * Adds a task to the TaskMap.
+ * Loads a tasks configuration into the TaskMap.
  *
- * @param {string} name
- * @param {Object} body
+ * @param {Object.<string, Object>} config
  */
-TaskMap.prototype.add = function(name, body) {
-  this.tasks[name] = new Task(name, body);
+TaskMap.prototype.load = function(config) {
+  Object.keys(config).map(function(taskName) {
+    this.tasks[taskName] = new Task(taskName, config[taskName]);
+  }.bind(this));
 };
 
 /**
- * Returns an alphabetically sorted list of defined task names.
+ * Returns an alphabetically sorted list of task names
+ * defined in the TaskMap.
  *
  * @returns {string[]}
  */
-TaskMap.prototype.getTaskNames = function() {
+TaskMap.prototype.names = function() {
   return Object.keys(this.tasks).sort();
 };
 
 /**
- * Returns true if the task exists.
+ * Returns true if a task is defined in the TaskMap.
  *
  * @param {string} taskName
  * @returns {boolean}
@@ -51,7 +53,7 @@ TaskMap.prototype.get = function(taskName) {
     throw new Error('task ' + taskName + ' is not defined');
   }
 
-  return new Task(taskName, this.tasks[taskName]);
+  return this.tasks[taskName];
 };
 
 module.exports = TaskMap;

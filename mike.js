@@ -38,7 +38,7 @@ console.log('Using file ' + colors.magenta(tasksFile));
 if (!tasks.contains(rootTask)) {
   console.log(colors.yellow('Available tasks: '));
 
-  tasks.getTaskNames().map(function(task) {
+  tasks.names().map(function(task) {
     console.log('  ' + task);
   });
 

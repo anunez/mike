@@ -3,7 +3,7 @@
 jest.dontMock('../task');
 var Task = require('../task');
 
-describe('task', function() {
+describe('Task', function() {
   describe('constructor', function() {
     it('should create a task with an empty body', function() {
       var task = new Task('something');

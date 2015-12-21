@@ -4,11 +4,11 @@
  * Task Constructor.
  *
  * @param {string} name
- * @param {Object} body
- * @param {string|string[]} body.pre
- * @param {string|string[]} body.cmd
- * @param {string|string[]} body.out
- * @param {boolean} body.spawn
+ * @param {Object} [body={}]
+ * @param {string|string[]} [body.pre=[]]
+ * @param {string|string[]} [body.cmd=[]]
+ * @param {string|string[]} [body.out=[]]
+ * @param {boolean} [body.spawn=false]
  * @constructor
  */
 var Task = function(name, body) {
